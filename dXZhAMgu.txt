@@ -1,0 +1,279 @@
+-- HAYDOS HUB v1.6 - FULLY WORKING (Reset Desync INCLUDED)
+-- Speed 27 | Infinite Jump | Player ESP | Reset Desync
+-- Press Insert to toggle GUI
+
+local TS = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local plr = Players.LocalPlayer
+local pgui = plr:WaitForChild("PlayerGui")
+
+-- States
+local SpeedEnabled = false
+local ESPEnabled = false
+local InfiniteJumpEnabled = false
+local ESPTable = {}
+
+-- === GUI
+local sg = Instance.new("ScreenGui")
+sg.Name = "HaydosHub"
+sg.ResetOnSpawn = false
+sg.Parent = pgui
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 440, 0, 580)
+main.Position = UDim2.new(0.5, -220, -1, 0)
+main.BackgroundColor3 = Color3.new(0,0,0)
+main.BorderSizePixel = 0
+main.ClipsDescendants = true
+main.Parent = sg
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,12)
+
+local top = Instance.new("Frame")
+top.Size = UDim2.new(1,0,0,50)
+top.BackgroundColor3 = Color3.fromRGB(12,12,12)
+top.Parent = main
+Instance.new("UICorner", top).CornerRadius = UDim.new(0,12)
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,-130,1,0)
+title.Position = UDim2.new(0,16,0,0)
+title.BackgroundTransparency = 1
+title.Text = "HAYDOS HUB"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = top
+
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.new(0,50,0,50)
+minBtn.Position = UDim2.new(1,-100,0,0)
+minBtn.BackgroundTransparency = 1
+minBtn.Text = "-"
+minBtn.TextColor3 = Color3.fromRGB(220,220,220)
+minBtn.Font = Enum.Font.GothamBold
+minBtn.TextSize = 36
+minBtn.Parent = top
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0,50,0,50)
+closeBtn.Position = UDim2.new(1,-50,0,0)
+closeBtn.BackgroundTransparency = 1
+closeBtn.Text = "x"
+closeBtn.TextColor3 = Color3.fromRGB(255,80,80)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 28
+closeBtn.Parent = top
+
+local content = Instance.new("ScrollingFrame")
+content.Size = UDim2.new(1,-20,1,-110)
+content.Position = UDim2.new(0,10,0,60)
+content.BackgroundTransparency = 1
+content.ScrollBarThickness = 4
+content.AutomaticCanvasSize = Enum.AutomaticSize.Y
+content.Parent = main
+
+-- Discord link (green)
+local discordLabel = Instance.new("TextLabel")
+discordLabel.Size = UDim2.new(1,-40,0,40)
+discordLabel.Position = UDim2.new(0,20,1,-50)
+discordLabel.BackgroundTransparency = 1
+discordLabel.Text = "Discord: https://discord.gg/BN28dU6xD"
+discordLabel.TextColor3 = Color3.fromRGB(0,255,100)
+discordLabel.Font = Enum.Font.GothamBold
+discordLabel.TextSize = 18
+discordLabel.TextXAlignment = Enum.TextXAlignment.Center
+discordLabel.Parent = main
+
+local y = 10
+local function newSwitch(name, callback)
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1,-20,0,50)
+	frame.Position = UDim2.new(0,10,0,y)
+	frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+	frame.Parent = content
+	Instance.new("UICorner", frame).CornerRadius = UDim.new(0,8)
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1,-70,1,0)
+	label.Position = UDim2.new(0,15,0,0)
+	label.BackgroundTransparency = 1
+	label.Text = name
+	label.TextColor3 = Color3.new(1,1,1)
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 18
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Parent = frame
+
+	local switch = Instance.new("TextButton")
+	switch.Size = UDim2.new(0,60,0,30)
+	switch.Position = UDim2.new(1,-75,0.5,-15)
+	switch.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	switch.Text = ""
+	switch.Parent = frame
+	Instance.new("UICorner", switch).CornerRadius = UDim.new(0,15)
+
+	local circle = Instance.new("Frame")
+	circle.Size = UDim2.new(0,26,0,26)
+	circle.Position = UDim2.new(0,4,0.5,-13)
+	circle.BackgroundColor3 = Color3.new(1,1,1)
+	circle.Parent = switch
+	Instance.new("UICorner", circle).CornerRadius = UDim.new(1,0)
+
+	local on = false
+	switch.MouseButton1Click:Connect(function()
+		on = not on
+		switch.BackgroundColor3 = on and Color3.fromRGB(0,170,255) or Color3.fromRGB(50,50,50)
+		circle.Position = on and UDim2.new(0,30,0.5,-13) or UDim2.new(0,4,0.5,-13)
+		callback(on)
+	end)
+	y = y + 60
+end
+
+-- Speed Boost (27)
+local function applySpeed()
+	if plr.Character and plr.Character:FindFirstChild("Humanoid") then
+		plr.Character.Humanoid.WalkSpeed = SpeedEnabled and 27 or 16
+	end
+end
+plr.CharacterAdded:Connect(function() task.wait(0.5) applySpeed() end)
+
+newSwitch("Speed Boost", function(state)
+	SpeedEnabled = state
+	applySpeed()
+end)
+
+-- Infinite Jump
+UIS.InputBegan:Connect(function(inp, gp)
+	if gp then return end
+	if InfiniteJumpEnabled and inp.KeyCode == Enum.KeyCode.Space then
+		if plr.Character and plr.Character:FindFirstChild("Humanoid") then
+			plr.Character.Humanoid:ChangeState("Jumping")
+		end
+	end
+end)
+
+newSwitch("Infinite Jump", function(state)
+	InfiniteJumpEnabled = state
+end)
+
+-- RESET DESYNC (NOW INCLUDED & WORKING)
+newSwitch("Reset Desync", function(state)
+	if not state then return end -- only runs when you turn it ON
+
+	if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+		local hrp = plr.Character.HumanoidRootPart
+		local pos = hrp.CFrame
+
+		-- Teleport far away + snap back + anchor + velocity spam = full desync
+		hrp.CFrame = pos + Vector3.new(0, 100000, 0)
+		task.wait(0.05)
+		hrp.CFrame = pos
+		hrp.Anchored = true
+		task.wait(0.12)
+		hrp.Anchored = false
+
+		for i = 1, 20 do
+			hrp.Velocity = Vector3.new(math.random(-15000,15000), math.random(-15000,15000), math.random(-15000,15000))
+			task.wait()
+		end
+		hrp.Velocity = Vector3.new(0,0,0)
+
+		print("HAYDOS HUB - Reset Desync Activated | You are now fully desynced")
+	end
+end)
+
+-- Player ESP
+local function addESP(p)
+	if p == plr or ESPTable[p] then return end
+	local box = Instance.new("BoxHandleAdornment")
+	box.Name = "HaydosESP"
+	box.Size = Vector3.new(4,6,4)
+	box.Color3 = Color3.fromRGB(0,255,255)
+	box.Transparency = 0.4
+	box.AlwaysOnTop = true
+	box.ZIndex = 10
+	box.Adornee = nil
+	box.Parent = sg
+	ESPTable[p] = box
+
+	RunService.Heartbeat:Connect(function()
+		if not p.Parent then return end
+		local root = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+		local hum = p.Character and p.Character:FindFirstChild("Humanoid")
+		if root and hum and hum.Health > 0 then
+			box.Adornee = root
+			box.Visible = ESPEnabled
+		else
+			box.Adornee = nil
+		end
+	end)
+
+	p.CharacterAdded:Connect(function()
+		task.wait(1)
+		if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			box.Adornee = p.Character.HumanoidRootPart
+		end
+	end)
+end
+
+for _, p in Players:GetPlayers() do if p ~= plr then addESP(p) end end
+Players.PlayerAdded:Connect(addESP)
+Players.PlayerRemoving:Connect(function(p)
+	if ESPTable[p] then ESPTable[p]:Destroy() ESPTable[p] = nil end
+end)
+
+newSwitch("Player ESP", function(state)
+	ESPEnabled = state
+end)
+
+-- Dragging / Minimize / Close / Insert toggle
+local tab = Instance.new("TextButton")
+tab.Size = UDim2.new(0,90,0,50)
+tab.Position = UDim2.new(0,20,0,20)
+tab.BackgroundColor3 = Color3.fromRGB(22,22,22)
+tab.Text = "HH"
+tab.TextColor3 = Color3.fromRGB(0,255,100)
+tab.Font = Enum.Font.GothamBold
+tab.TextSize = 26
+tab.Visible = false
+tab.Parent = sg
+Instance.new("UIStroke", tab).Thickness = 2.5
+Instance.new("UICorner", tab).CornerRadius = UDim.new(0,10)
+
+local dragging, dragInput, dragStart, startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	if dragging == "main" then main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	elseif dragging == "tab" then tab.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end
+end
+
+top.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = "main" dragStart = i.Position startPos = main.Position end end)
+tab.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = "tab" dragStart = i.Position startPos = tab.Position end end)
+UIS.InputChanged:Connect(function(i) if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then update(i) end end)
+UIS.InputEnded:Connect(function() dragging = false end)
+
+local tween = TweenInfo.new(0.6, Enum.EasingStyle.Quint)
+local openPos = UDim2.new(0.5, -220, 0, 40)
+local hidePos = UDim2.new(0.5, -220, -1, 0)
+local opened = true
+
+local function show() TS:Create(main, tween, {Position = openPos}):Play() task.wait(0.1) tab.Visible = false opened = true end
+local function hide() TS:Create(main, tween, {Position = hidePos}):Play() task.wait(0.5) tab.Visible = true opened = false end
+
+minBtn.MouseButton1Click:Connect(function() if opened then hide() else show() end end)
+tab.MouseButton1Click:Connect(show)
+closeBtn.MouseButton1Click:Connect(function() hide() task.wait(0.8) sg:Destroy() end)
+
+UIS.InputBegan:Connect(function(i,gp)
+	if not gp and i.KeyCode == Enum.KeyCode.Insert then
+		if opened then hide() else show() end
+	end
+end)
+
+task.wait(0.6)
+show()
