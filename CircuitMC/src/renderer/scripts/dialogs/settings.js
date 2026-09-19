@@ -125,7 +125,7 @@ async function renderJavaPanel(panel) {
   const installs = await Api.java.findAll();
   list.innerHTML = '';
   if (installs.length === 0) {
-    list.appendChild(el('<div class="item-row"><span class="item-name" style="color:var(--text-faint)">None found -- install a JDK, or set a path manually above.</span></div>'));
+    list.appendChild(el('<div class="item-row"><span class="item-name" style="color:var(--text-faint)">None found -- CircuitMC will automatically download the right Java version the first time it\'s needed, or you can set a path manually above.</span></div>'));
   }
   for (const info of installs) {
     list.appendChild(el(`

@@ -13,6 +13,7 @@ const fabric = require('../mc/fabric');
 const forge = require('../mc/forge');
 const neoforge = require('../mc/neoforge');
 const javaFinder = require('../mc/javaFinder');
+const javaProvisioner = require('../mc/javaProvisioner');
 const installer = require('../mc/installer');
 const launcher = require('../mc/launcher');
 const auth = require('../mc/auth');
@@ -152,15 +153,19 @@ function registerIpcHandlers() {
     const instance = instanceManager.getInstance(id);
     const onProgress = (payload) => sendToAll('install-progress', { instanceId: id, ...payload });
     let versionId;
-    const javaBin = await resolveJavaForInstall(instance);
 
+    // Only Forge/NeoForge need Java at install time (to run their official
+    // installer jar); vanilla and Fabric installs are pure downloads and
+    // must not be blocked on Java being present at all.
     if (instance.loader === 'vanilla' || !instance.loader) {
       versionId = await installer.installVanilla(instance.mcVersion, { onProgress });
     } else if (instance.loader === 'fabric') {
       versionId = await installer.installFabric(instance.mcVersion, instance.loaderVersion, { onProgress });
     } else if (instance.loader === 'forge') {
+      const javaBin = await resolveJavaForInstall(instance, onProgress);
       versionId = await installer.installForgeLike('forge', instance.mcVersion, instance.loaderVersion, javaBin, { onProgress });
     } else if (instance.loader === 'neoforge') {
+      const javaBin = await resolveJavaForInstall(instance, onProgress);
       versionId = await installer.installForgeLike('neoforge', instance.mcVersion, instance.loaderVersion, javaBin, { onProgress });
     } else {
       throw new Error(`Unknown mod loader: ${instance.loader}`);
@@ -175,7 +180,8 @@ function registerIpcHandlers() {
       throw new Error('This instance has not finished installing yet.');
     }
     const account = getActiveAccountOrThrow();
-    const javaBin = instance.javaPath || (await resolveJavaForInstall(instance));
+    const onProgress = (payload) => sendToAll('install-progress', { instanceId: id, ...payload });
+    const javaBin = instance.javaPath || (await resolveJavaForInstall(instance, onProgress));
 
     const pid = await launcher.launch(
       { ...instance, javaPath: javaBin },
@@ -229,14 +235,20 @@ function getActiveAccountOrThrow() {
   return account;
 }
 
-async function resolveJavaForInstall(instance) {
+async function resolveJavaForInstall(instance, onProgress) {
   if (instance.javaPath) return instance.javaPath;
   const s = settings.load();
   if (s.globalJavaPath) return s.globalJavaPath;
+
   const installs = await javaFinder.findAllJavaInstalls();
   const best = await javaFinder.pickBestJavaFor(instance.mcVersion, installs);
-  if (!best) throw new Error('No Java installation found. Install a JDK or select one manually in Settings.');
-  return path.join(best.javaHome, 'bin', process.platform === 'win32' ? 'javaw.exe' : 'java');
+  if (best) return path.join(best.javaHome, 'bin', process.platform === 'win32' ? 'javaw.exe' : 'java');
+
+  // No system Java found -- download and install the right one automatically
+  // rather than making the user do it by hand.
+  const major = javaFinder.recommendedJavaMajor(instance.mcVersion);
+  await javaProvisioner.provisionJava(major, { onProgress });
+  return javaProvisioner.javaBinPath(major);
 }
 
 module.exports = { registerIpcHandlers };

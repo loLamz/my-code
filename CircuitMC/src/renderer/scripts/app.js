@@ -225,6 +225,15 @@ function wireBackendEvents() {
     notify();
     setStatus('Ready.');
   });
+  // Catch-all so any background progress (e.g. auto-downloading Java the
+  // first time an instance is launched) shows up in the status bar even
+  // when nothing local is listening for that specific operation.
+  Api.events.onInstallProgress((p) => {
+    const pct = typeof p.completed === 'number' && typeof p.total === 'number' && p.total > 0
+      ? Math.round((p.completed / p.total) * 100)
+      : null;
+    setStatus(p.message || p.phase, pct);
+  });
 }
 
 async function init() {

@@ -33,7 +33,7 @@ async function isFileValid(filePath, expectedSha1, expectedSize) {
 
 // Downloads a single file, skipping it if a valid (hash-matching) copy is
 // already on disk, and verifying the hash after downloading.
-async function downloadFile({ url, destPath, sha1, size, retries = 3 }) {
+async function downloadFile({ url, destPath, sha1, size, retries = 3, onData }) {
   if (await isFileValid(destPath, sha1, size)) {
     return { skipped: true, destPath };
   }
@@ -47,6 +47,14 @@ async function downloadFile({ url, destPath, sha1, size, retries = 3 }) {
       const tmp = `${destPath}.part`;
       const body = res.body ? Readable.fromWeb(res.body) : null;
       if (!body) throw new Error(`No response body for ${url}`);
+      if (onData) {
+        const total = size || Number(res.headers.get('content-length')) || 0;
+        let received = 0;
+        body.on('data', (chunk) => {
+          received += chunk.length;
+          onData(received, total);
+        });
+      }
       await pipeline(body, fs.createWriteStream(tmp));
       if (sha1) {
         const actual = await sha1File(tmp);
