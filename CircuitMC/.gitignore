@@ -1,0 +1,9 @@
+node_modules/
+release/
+dist/
+*.log
+.DS_Store
+Thumbs.db
+
+# Runtime user data created by the app when run from source
+.circuitmc-dev-data/

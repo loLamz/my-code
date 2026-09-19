@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+<title>CircuitMC</title>
+<link rel="icon" href="assets/app-icon.png" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="styles/layout.css" />
+<link rel="stylesheet" href="styles/components.css" />
+<link rel="stylesheet" href="styles/dialogs.css" />
+</head>
+<body>
+<div id="app-shell">
+
+  <!-- Custom titlebar -->
+  <div id="titlebar">
+    <div class="titlebar-brand">
+      <img src="assets/app-icon.png" alt="" />
+      <span>CircuitMC</span>
+    </div>
+    <div class="titlebar-spacer"></div>
+    <div id="window-controls">
+      <button class="win-btn" id="btn-minimize" title="Minimize">
+        <svg viewBox="0 0 10 10"><path d="M0 5h10" stroke="currentColor" stroke-width="1"/></svg>
+      </button>
+      <button class="win-btn" id="btn-maximize" title="Maximize">
+        <svg viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+      </button>
+      <button class="win-btn close" id="btn-close" title="Close">
+        <svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10" stroke="currentColor" stroke-width="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Traditional dropdown menu bar -->
+  <div id="menubar"></div>
+
+  <div id="body">
+    <aside id="sidebar">
+      <div id="sidebar-header">
+        <div class="brand-mark">
+          <img src="assets/app-icon.png" alt="" />
+          <div>
+            <div class="brand-title">CircuitMC</div>
+            <div class="brand-sub">Instance Launcher</div>
+          </div>
+        </div>
+      </div>
+      <div id="sidebar-context"></div>
+    </aside>
+
+    <main id="main">
+      <div id="instance-view-root">
+        <div id="grid-view">
+          <div id="instance-scroll"></div>
+        </div>
+        <div id="detail-view" class="hidden"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toolbar"></div>
+  <div id="statusbar"></div>
+</div>
+
+<div id="dialog-root"></div>
+<div id="context-menu-root"></div>
+
+<script src="scripts/icons.js"></script>
+<script src="scripts/mockApi.js"></script>
+<script src="scripts/api.js"></script>
+<script src="scripts/state.js"></script>
+<script src="scripts/views/menubar.js"></script>
+<script src="scripts/views/toolbar.js"></script>
+<script src="scripts/views/statusbar.js"></script>
+<script src="scripts/views/sidebar.js"></script>
+<script src="scripts/views/instanceGrid.js"></script>
+<script src="scripts/views/instanceDetail.js"></script>
+<script src="scripts/dialogs/dialog.js"></script>
+<script src="scripts/dialogs/addInstance.js"></script>
+<script src="scripts/dialogs/settings.js"></script>
+<script src="scripts/dialogs/simple.js"></script>
+<script src="scripts/app.js"></script>
+</body>
+</html>

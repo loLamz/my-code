@@ -1,0 +1,61 @@
+{
+  "name": "circuitmc",
+  "productName": "CircuitMC",
+  "version": "0.1.0",
+  "description": "CircuitMC is a from-scratch Minecraft instance launcher: create isolated instances for any Minecraft version and mod loader, keep their mods/worlds/config separate, and launch them from one organized window.",
+  "main": "src/main/main.js",
+  "author": "CircuitMC Project",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "gen-icons": "node tools/gen-icons.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win nsis portable",
+    "dist:nsis": "electron-builder --win nsis",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.circuitmc.launcher",
+    "productName": "CircuitMC",
+    "copyright": "Copyright (c) 2025 CircuitMC Project",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "src/main/main.js"
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "CircuitMC-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CircuitMC"
+    },
+    "portable": {
+      "artifactName": "CircuitMC-Portable-${version}.${ext}"
+    }
+  }
+}

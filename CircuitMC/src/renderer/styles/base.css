@@ -1,0 +1,118 @@
+:root {
+  --bg-app: #131417;
+  --bg-titlebar: #17191d;
+  --bg-panel: #1b1e22;
+  --bg-panel-alt: #1f2227;
+  --bg-elevated: #262a31;
+  --bg-elevated-hover: #2c3038;
+  --bg-input: #16181c;
+
+  --border: #34383f;
+  --border-subtle: #262a30;
+  --border-strong: #40454d;
+
+  --text: #d7dadd;
+  --text-dim: #90969d;
+  --text-faint: #5b6169;
+
+  --accent: #4fd1c5;
+  --accent-hover: #6fe0d5;
+  --accent-dim: #2c5f5b;
+  --accent-bg: rgba(79, 209, 197, 0.13);
+  --accent-bg-strong: rgba(79, 209, 197, 0.22);
+
+  --amber: #f0a63c;
+  --amber-dim: #7a5a2a;
+
+  --danger: #e2555a;
+  --danger-hover: #ef6a6f;
+  --danger-bg: rgba(226, 85, 90, 0.14);
+
+  --radius: 3px;
+  --font-ui: "Segoe UI", "Inter", Tahoma, Arial, sans-serif;
+  --font-mono: "Consolas", "SFMono-Regular", ui-monospace, monospace;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-app);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  line-height: 1.4;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-panel);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border: 2px solid var(--bg-panel);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent);
+}
+
+svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Default size for icon wrapper spans (see scripts/icons.js iconHtml()).
+   Individual contexts (buttons, menus, etc.) may override this. */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
